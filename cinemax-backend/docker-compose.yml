@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  cinemax:
+    build:
+      context: .
+      target: builder
+    image: cinemax
+    environment:
+      secret: "pepinilloRick"
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/go/src/app
+    command: reflex -r "\.go$$" -s -- sh -c "go run ./"
+  database:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: "cinemax"
+      POSTGRES_PASSWORD: "cinemax"
+      POSTGRES_DB: "cinemax"
+    volumes:
+      - ./db/models.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/carga_inicial.sql:/docker-entrypoint-initdb.d/load.sql
