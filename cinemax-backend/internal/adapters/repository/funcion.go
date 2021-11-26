@@ -32,7 +32,6 @@ func (r *repository) DisponibilidadFuncion(ctx context.Context, f *domain.Funcio
 	`
 	var result int
 	err := r.db.GetContext(ctx, &result, query, f.Sala.ID, f.FechaInicio, f.FechaFin)
-	fmt.Println(result)
 	if err != nil {
 		return false
 	}
@@ -45,15 +44,17 @@ func (r *repository) GetFuncionesByPeliculaAndFechaInicio(
 	query := `
 		select "FUNCION_ID", "FECHA_INICIO", "FECHA_FIN", 
 			"PELICULA_ID" as "PELICULA.PELICULA_ID", 
-			"SALA_ID" AS "SALA.SALA_ID"
-		from "FUNCION"
+			"CLAVE" AS "SALA.CLAVE"
+		from "FUNCION" "F"
+			JOIN "SALA" "S" ON "F"."SALA_ID" = "S"."SALA_ID"
 		where "PELICULA_ID" = $1
-			and to_char("FECHA_INICIO", 'YYYY-MM-DD') = $2
+			and to_char("FECHA_INICIO", 'YYYY-MM-DD') = to_char(NOW(), 'YYYY-MM-DD')
 	`
 	var funciones []domain.Funcion
-	err := r.db.SelectContext(ctx, &funciones, query, peliculaId, fecha.Format("2006-01-02"))
+	err := r.db.SelectContext(ctx, &funciones, query, peliculaId)
 	if err != nil {
 		return nil, domain.NewInternal()
 	}
+	fmt.Println(len(funciones))
 	return funciones, nil
 }

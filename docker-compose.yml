@@ -3,15 +3,16 @@ version: "3.9"
 services:
   cinemax:
     build:
-      context: .
+      context: ./cinemax-backend
       target: builder
     image: cinemax
     environment:
       secret: "pepinilloRick"
+      TZ: "America/Mexico_City"
     ports:
       - 8080:8080
     volumes:
-      - .:/go/src/app
+      - ./cinemax-backend:/go/src/app
     command: reflex -r "\.go$$" -s -- sh -c "go run ./"
   database:
     image: postgres
@@ -21,6 +22,7 @@ services:
       POSTGRES_USER: "cinemax"
       POSTGRES_PASSWORD: "cinemax"
       POSTGRES_DB: "cinemax"
+      TZ: "America/Mexico_City"
     volumes:
-      - ./db/models.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./db/carga_inicial.sql:/docker-entrypoint-initdb.d/load.sql
+      - ./cinemax-backend/db/models.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./cinemax-backend/db/carga_inicial.sql:/docker-entrypoint-initdb.d/load.sql

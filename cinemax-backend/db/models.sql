@@ -13,8 +13,8 @@ CREATE TABLE "TIPO_SALA"(
 --
 CREATE TABLE "SALA"(
     "SALA_ID"       int4            GENERATED ALWAYS AS IDENTITY,
-    "NOMBRE"        varchar(40)     NOT NULL,
-    "DESCRIPCION"   varchar(255)    NOT NULL,
+    "CLAVE"        varchar(40)     NOT NULL,
+    "NOMBRE"   varchar(255)    NOT NULL,
     "UBICACION"     varchar(255)    NOT NULL,
     "TIPO_SALA_ID"  int4            NOT NULL,
     "CREATED_AT"   timestamp        NOT NULL DEFAULT NOW(),

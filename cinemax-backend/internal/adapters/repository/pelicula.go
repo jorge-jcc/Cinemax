@@ -46,7 +46,11 @@ func (r *repository) UpdateImage(ctx context.Context, id, imagen string) error {
 func (r *repository) GetPeliculaById(ctx context.Context, id string) (*domain.Pelicula, error) {
 	query := `
 		SELECT "PELICULA_ID", "NOMBRE", "DIRECTOR", "DESCRIPCION", "DURACION_MINUTOS", "ANIO", 
-			"FECHA_DISPONIBILIDAD", "IMAGEN", "RESENA"
+			"FECHA_DISPONIBILIDAD", "RESENA",
+		CASE
+			WHEN "IMAGEN" is NULL THEN ''
+			ELSE "IMAGEN"
+		END AS "IMAGEN"
 		FROM "PELICULA" WHERE "PELICULA_ID" = $1
 	`
 	p := &domain.Pelicula{}
@@ -64,7 +68,7 @@ func (r *repository) GetPeliculaById(ctx context.Context, id string) (*domain.Pe
 func (r *repository) GetPeliculasByNombre(ctx context.Context, nombre string, limit, offset int16) ([]domain.Pelicula, error) {
 	query := `
 		SELECT "P"."NOMBRE", "P"."DIRECTOR", "P"."DESCRIPCION", "P"."DURACION_MINUTOS",
-			"P"."ANIO", "P"."FECHA_DISPONIBILIDAD", "P"."IMAGEN", "P"."RESENA",
+			"P"."ANIO", "P"."FECHA_DISPONIBILIDAD", "P"."RESENA",
 			"I"."NOMBRE" AS "IDIOMA.NOMBRE", "S"."NOMBRE" AS "SUBTITULO.NOMBRE",
 			"G"."NOMBRE" AS "GENERO.NOMBRE", "C"."CLAVE" AS "CLASIFICACION.CLAVE",
 			"C"."DESCRIPCION" AS "CLASIFICACION.DESCRIPCION"
@@ -78,6 +82,22 @@ func (r *repository) GetPeliculasByNombre(ctx context.Context, nombre string, li
 	`
 	var peliculas []domain.Pelicula
 	err := r.db.SelectContext(ctx, &peliculas, query, "%"+nombre+"%", 20, 0)
+	if err != nil {
+		return nil, domain.NewInternal()
+	}
+	return peliculas, nil
+}
+
+func (r *repository) GetPeliculasEnCartelera(ctx context.Context) ([]domain.Pelicula, error) {
+	// TO_CHAR("F"."FECHA_INICIO", 'YYYY-MM-DD') = TO_CHAR(NOW(), 'YYYY-MM-DD')
+	query := `
+		SELECT DISTINCT "P"."PELICULA_ID", "P"."NOMBRE" 
+		FROM "PELICULA" AS "P"
+			JOIN "FUNCION" AS "F" ON "P"."PELICULA_ID" = "F"."PELICULA_ID"
+		WHERE TO_CHAR("F"."FECHA_INICIO", 'YYYY-MM-DD') = TO_CHAR(NOW(), 'YYYY-MM-DD')
+	`
+	var peliculas []domain.Pelicula
+	err := r.db.SelectContext(ctx, &peliculas, query)
 	if err != nil {
 		return nil, domain.NewInternal()
 	}

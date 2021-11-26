@@ -90,6 +90,31 @@ func (h *handler) SearchPeliculasByName(c *gin.Context) {
 	})
 }
 
+func (h *handler) GetPeliculasEnCartelera(c *gin.Context) {
+	type resPelicula struct {
+		ID     string `json:"id"`
+		Nombre string `json:"nombre"`
+	}
+	ctx := c.Request.Context()
+
+	peliculas, err := h.s.GetPeliculasEnCartelera(ctx)
+	if err != nil {
+		log.Printf("Failed to get peliculas: %v\n", err)
+		c.JSON(domain.Status(err), gin.H{
+			"error": err,
+		})
+		return
+	}
+	p := make([]resPelicula, len(peliculas))
+	for i := range peliculas {
+		p[i].ID = peliculas[i].ID
+		p[i].Nombre = peliculas[i].Nombre
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"peliculas": p,
+	})
+}
+
 func (h *handler) LoadImagen(c *gin.Context) {
 	// Validando el Id de la imagen
 	peliculaId := c.PostForm("peliculaId")

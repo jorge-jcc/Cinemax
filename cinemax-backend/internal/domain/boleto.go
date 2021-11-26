@@ -11,3 +11,9 @@ type TipoBoleto struct {
 	Clave       string `json:"clave" db:"FUNCION_ID"`
 	Descripcion string `json:"descripcion" db:"FUNCION_ID"`
 }
+
+type PrecioBoleto struct {
+	Clave       string
+	Precio      float32
+	TipoFuncion string
+}

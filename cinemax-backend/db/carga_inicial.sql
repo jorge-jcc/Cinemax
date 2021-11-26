@@ -2,15 +2,15 @@ INSERT INTO "TIPO_SALA" ("CLAVE", "DESCRIPCION") VALUES
   ('N', 'Sala Normal'),
   ('3D', 'Sala 3D');
 
-INSERT INTO "SALA" ("NOMBRE", "DESCRIPCION", "UBICACION", "TIPO_SALA_ID") VALUES 
-  ('SALA 1', 'Sala 1', 'Junto a la tienda de dulces', 1),
-  ('SALA 2', 'Sala 2', 'A lado de sala 1 (tienda de dulces)', 1),
-  ('SALA 3', 'Sala 3', 'Junto al baño de hombres', 1),
-  ('SALA 4', 'Sala 4', 'Junto al baño de mujeres', 1),
-  ('SALA 5', 'Sala 5', 'Pasillo derecho al fondo', 1),
-  ('SALA 6', 'Sala 6', 'Pasillo derecho al fondo', 2),
-  ('SALA 7', 'Sala 7', 'Pasillo izquierdo al fondo', 2),
-  ('SALA 8', 'Sala 8', 'Pasillo izquiero al fondo', 2);
+INSERT INTO "SALA" ("CLAVE", "NOMBRE", "UBICACION", "TIPO_SALA_ID") VALUES 
+  ('S1', 'SALA 1', 'Junto a la tienda de dulces', 1),
+  ('S2', 'SALA 2', 'A lado de sala 1 (tienda de dulces)', 1),
+  ('S3', 'SALA 3', 'Junto al baño de hombres', 1),
+  ('S4', 'SALA 4', 'Junto al baño de mujeres', 1),
+  ('S5', 'SALA 5', 'Pasillo derecho al fondo', 1),
+  ('S6', 'SALA 6', 'Pasillo derecho al fondo', 2),
+  ('S7', 'SALA 7', 'Pasillo izquierdo al fondo', 2),
+  ('S8', 'SALA 8', 'Pasillo izquiero al fondo', 2);
 
 INSERT INTO "ASIENTO" ("CLAVE", "SALA_ID") VALUES
   ('A1', 1),  ('B1', 1),  ('C1', 1),  ('D1', 1),  ('E1', 1),  ('F1', 1),  ('G1', 1),  ('H1', 1),  ('I1', 1),  ('J1', 1),  ('K1', 1),  ('L1', 1), 
@@ -171,3 +171,10 @@ INSERT INTO "STATUS_ASIGNACION_ASIENTO" ("CLAVE", "DESCRIPCION") VALUES
   ('EN_COMPRA', 'El usuario esta en proceso de pagar el asiento'),
   ('ASIGNADO', 'El asiento ha sido asignado a un boleto'),
   ('DESCONOCIDO', 'No se conoce el status del asiento');
+
+insert into "PELICULA" ("NOMBRE", "DIRECTOR", "DESCRIPCION", "DURACION_MINUTOS", "ANIO", "FECHA_DISPONIBILIDAD", "RESENA", "CLASIFICACION_ID", "IDIOMA_ID", "SUBTITULO_ID", "GENERO_ID") values ('Madeleine', 'Martino', 'Drainage of Mesenteric Lymphatic, Percutaneous Endoscopic Approach', 181, 1992, '2021-10-24 18:00:26', 'Unsp superficial injury of unspecified thumb, subs encntr', 4, 1, 1, 10);
+insert into "PELICULA" ("NOMBRE", "DIRECTOR", "DESCRIPCION", "DURACION_MINUTOS", "ANIO", "FECHA_DISPONIBILIDAD", "RESENA", "CLASIFICACION_ID", "IDIOMA_ID", "SUBTITULO_ID", "GENERO_ID") values ('Santa Who?', 'Tore', 'Dilation of Right Vertebral Artery with Three Drug-eluting Intraluminal Devices, Percutaneous Approach', 144, 2008, '2021-09-17 19:27:18', 'Hypothermia, subsequent encounter', 2, 2, 2, 10);
+insert into "PELICULA" ("NOMBRE", "DIRECTOR", "DESCRIPCION", "DURACION_MINUTOS", "ANIO", "FECHA_DISPONIBILIDAD", "RESENA", "CLASIFICACION_ID", "IDIOMA_ID", "SUBTITULO_ID", "GENERO_ID") values ('Old Dark House, The', 'Corey', 'Destruction of Right Wrist Joint, Percutaneous Endoscopic Approach', 192, 1992, '2021-05-31 06:04:57', 'Oth slipping, tripping and stumbling w/o falling, init', 3, 1, 1, 6);
+insert into "PELICULA" ("NOMBRE", "DIRECTOR", "DESCRIPCION", "DURACION_MINUTOS", "ANIO", "FECHA_DISPONIBILIDAD", "RESENA", "CLASIFICACION_ID", "IDIOMA_ID", "SUBTITULO_ID", "GENERO_ID") values ('Bustin'' Loose', 'Thatcher', 'Transfer Facial Nerve to Optic Nerve, Open Approach', 192, 1987, '2021-04-30 06:29:40', 'Poisoning by local anesthetics, intentional self-harm, subs', 2, 2, 2, 3);
+insert into "PELICULA" ("NOMBRE", "DIRECTOR", "DESCRIPCION", "DURACION_MINUTOS", "ANIO", "FECHA_DISPONIBILIDAD", "RESENA", "CLASIFICACION_ID", "IDIOMA_ID", "SUBTITULO_ID", "GENERO_ID") values ('Porky''s', 'Berke', 'Supplement Left Anterior Tibial Artery with Synthetic Substitute, Open Approach', 190, 2010, '2021-05-19 21:20:27', 'Greenstick fracture of shaft of right ulna, init for clos fx', 3, 2, 2, 3);
+insert into "PELICULA" ("NOMBRE", "DIRECTOR", "DESCRIPCION", "DURACION_MINUTOS", "ANIO", "FECHA_DISPONIBILIDAD", "RESENA", "CLASIFICACION_ID", "IDIOMA_ID", "SUBTITULO_ID", "GENERO_ID") values ('Silver Bears', 'Dall', 'Alteration of Abdomen Subcutaneous Tissue and Fascia, Percutaneous Approach', 149, 2012, '2021-06-02 10:56:33', 'Nondisp fx of medial condyle of left femur, init for clos fx', 4, 2, 1, 5);

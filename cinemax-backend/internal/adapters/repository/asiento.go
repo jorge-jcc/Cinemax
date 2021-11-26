@@ -30,7 +30,7 @@ func (r *repository) GetAsientosByFuncion(ctx context.Context, funcionId string)
 	query := `
 		SELECT "ASIGNACION_ASIENTO_ID", "CLAVE", "FUNCION_ID", 
 			CASE
-				WHEN "AS"."STATUS_ASIENTO_ID" = 1 OR (TO_NUMBER(TO_CHAR(NOW() - "T"."UPDATED_AT", 'MI'), '99') >= 1 AND "AS"."STATUS_ASIENTO_ID" IN (2, 3)) THEN 'DISPONIBLE'
+				WHEN "AS"."STATUS_ASIENTO_ID" = 1 OR (EXTRACT(EPOCH FROM NOW() - "T"."UPDATED_AT")/60 >= 1 AND "AS"."STATUS_ASIENTO_ID" IN (2, 3)) THEN 'DISPONIBLE'
 				WHEN "AS"."STATUS_ASIENTO_ID" IN (2, 3) THEN 'EN PROCESO'
 				WHEN "AS"."STATUS_ASIENTO_ID" = 4 THEN 'ASIGNADO'
 				ELSE 'DESCONOCIDO'
@@ -44,7 +44,6 @@ func (r *repository) GetAsientosByFuncion(ctx context.Context, funcionId string)
 	`
 	var asientos []domain.AsignacionAsiento
 	err := r.db.SelectContext(ctx, &asientos, query, funcionId)
-	fmt.Println(err, len(asientos))
 	if err != nil {
 		return nil, domain.NewInternal()
 	}
@@ -53,7 +52,12 @@ func (r *repository) GetAsientosByFuncion(ctx context.Context, funcionId string)
 
 func (r *repository) GetAsientoByID(ctx context.Context, asientoId string) (*domain.AsignacionAsiento, error) {
 	query := `
-		SELECT "ASIGNACION_ASIENTO_ID", "FUNCION_ID", "UPDATED_AT"
+		SELECT "ASIGNACION_ASIENTO_ID", "FUNCION_ID", "UPDATED_AT",
+		CASE
+			WHEN "TRANSACCION_ID" is NULL THEN 0
+			ELSE "TRANSACCION_ID"
+		END
+		AS "TRANSACCION_ID"
 		FROM "ASIGNACION_ASIENTO"
 		WHERE "ASIGNACION_ASIENTO_ID" = $1
 	`
@@ -78,7 +82,7 @@ func (r *repository) DisponibilidadAsiento(ctx context.Context, a *domain.Asigna
 			AND "FUNCION_ID" = $2
 			AND (
 				"STATUS_ASIENTO_ID" = 1 OR (
-					TO_NUMBER(TO_CHAR(NOW() - "T"."UPDATED_AT", 'MI'), '99') >= 1 AND "STATUS_ASIENTO_ID" IN (2, 3)
+					EXTRACT(EPOCH FROM NOW() - "T"."UPDATED_AT")/60 >= 1 AND "STATUS_ASIENTO_ID" IN (2, 3)
 				)
 			)
 	`
@@ -100,13 +104,14 @@ func (r *repository) UpdateStatusAsiento(ctx context.Context, a *domain.Asignaci
 		WHERE "ASIGNACION_ASIENTO_ID" = $3 AND "UPDATED_AT" = $4
 	`
 	result, err := r.db.ExecContext(ctx, query, a.StatusID, a.TransaccionId, a.ID, a.UpdatedAt)
-	fmt.Println(err)
 	if err != nil {
 		return domain.NewInternal()
 	}
-	if rows, e := result.RowsAffected(); rows != 1 {
-		fmt.Println("hOLA", rows, e)
-		return domain.NewNotFound("asignacion_asiento_id", a.ID)
+	if rows, _ := result.RowsAffected(); rows != 1 {
+		return &domain.Error{
+			Type:    domain.Conflict,
+			Message: "El asiento ya no se encuentra disponible",
+		}
 	}
 	return nil
 }
@@ -118,7 +123,6 @@ func (r *repository) UpdateTimeTransaction(ctx context.Context, transaccionId st
 		WHERE "TRANSACCION_ID" = $1
 	`
 	result, err := r.db.ExecContext(ctx, query, transaccionId)
-	fmt.Println(result, err)
 	if err != nil {
 		return domain.NewInternal()
 	}
@@ -156,8 +160,26 @@ func (r *repository) ValidarTransaccion(ctx context.Context, transaccionId strin
 	}
 	if result >= 1 {
 		return &domain.Error{
-			Type:    domain.Conflict,
-			Message: fmt.Sprintf("la transacción %v dejo de ser válida", transaccionId),
+			Type:    domain.NotFound,
+			Message: "La transacción ha vencido, vuelve a capturar tus boletos",
+		}
+	}
+	return nil
+}
+
+func (r *repository) DeshacerTransaccion(ctx context.Context, transaccionId string) error {
+	query := `
+		UPDATE "ASIGNACION_ASIENTO" SET "STATUS_ASIENTO_ID" = 1
+		WHERE "TRANSACCION_ID" = $1
+	`
+	result, err := r.db.ExecContext(ctx, query, transaccionId)
+	if err != nil {
+		return domain.NewInternal()
+	}
+	if rows, _ := result.RowsAffected(); rows == 0 {
+		return &domain.Error{
+			Type:    domain.NotFound,
+			Message: "No se encontraron asientos asociados a la transacción",
 		}
 	}
 	return nil

@@ -1,10 +1,10 @@
 package domain
 
 type Sala struct {
-	ID          string   `json:"id" db:"SALA_ID"`
-	Nombre      string   `json:"nombre" db:"NOMBRE"`
-	Descripcion string   `json:"descripcion" db:"DESCRIPCION"`
-	TipoSala    TipoSala `json:"tipoSala" db:"TIPO_SALA"`
+	ID       string   `json:"id" db:"SALA_ID"`
+	Clave    string   `json:"clave" db:"CLAVE"`
+	Nombre   string   `json:"nombre" db:"NOMBRE"`
+	TipoSala TipoSala `json:"tipoSala" db:"TIPO_SALA"`
 }
 
 type TipoSala struct {

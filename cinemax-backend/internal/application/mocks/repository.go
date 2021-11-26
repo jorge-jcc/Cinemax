@@ -87,3 +87,41 @@ func (s *mockRepository) DisponibilidadFuncion(ctx context.Context, f *domain.Fu
 func (s *mockRepository) GetFuncionesByPeliculaAndFechaInicio(ctx context.Context, peliculaId string, fecha time.Time) ([]domain.Funcion, error) {
 	return nil, nil
 }
+
+func (s *mockRepository) InicializarAsientos(ctx context.Context, f *domain.Funcion) error {
+	return nil
+}
+func (s *mockRepository) GetAsientosByFuncion(ctx context.Context, funcionId string) ([]domain.AsignacionAsiento, error) {
+	return nil, nil
+}
+func (s *mockRepository) GetAsientoByID(ctx context.Context, asientoId string) (*domain.AsignacionAsiento, error) {
+	return nil, nil
+}
+func (s *mockRepository) DisponibilidadAsiento(ctx context.Context, a *domain.AsignacionAsiento) bool {
+	return false
+}
+func (s *mockRepository) UpdateStatusAsiento(ctx context.Context, a *domain.AsignacionAsiento) error {
+	return nil
+}
+
+func (s *mockRepository) GetNewTransactionID(ctx context.Context) (string, error) {
+	return "", nil
+}
+func (s *mockRepository) ValidarTransaccion(ctx context.Context, transaccionId string) error {
+	return nil
+}
+func (s *mockRepository) UpdateTimeTransaction(ctx context.Context, transaccionId string) error {
+	return nil
+}
+
+func (s *mockRepository) GetPeliculasEnCartelera(ctx context.Context) ([]domain.Pelicula, error) {
+	return nil, nil
+}
+
+func (s *mockRepository) GetSalaByFuncionId(ctx context.Context, funcionId string) (*domain.Sala, error) {
+	return nil, nil
+}
+
+func (s *mockRepository) DeshacerTransaccion(ctx context.Context, transaccionId string) error {
+	return nil
+}

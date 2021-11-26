@@ -43,10 +43,12 @@ func (h *handler) registerRouter(e *gin.Engine) {
 	pelicula.GET("/clasificaciones", h.GetClasificaciones)
 	pelicula.GET("/idiomas", h.GetIdiomas)
 	pelicula.GET("/generos", h.GetGeneros)
+	pelicula.GET("/cartelera", h.GetPeliculasEnCartelera)
 
 	sala := e.Group("/sala")
 	sala.Use(middlewares.Auth(h.t))
 	sala.GET("", h.GetSalas)
+	sala.GET("/by_funcion", h.GetSalaByFuncionID)
 
 	funcion := e.Group("/funcion")
 	funcion.Use(middlewares.Auth(h.t))
@@ -56,7 +58,9 @@ func (h *handler) registerRouter(e *gin.Engine) {
 	asientos := e.Group("/asiento")
 	asientos.Use(middlewares.Auth(h.t))
 	asientos.GET("", h.GetAsientosByFuncion)
-	asientos.POST("/seleccionar", h.SeleccionarAsiento)
+	asientos.POST("", h.SeleccionarAsiento)
+	asientos.DELETE("", h.DeseleccionarAsiento)
+	asientos.POST("/deshacer", h.DeshacerTransaccion)
 
 	taquilla := e.Group("/taquilla")
 	taquilla.Use(middlewares.Auth(h.t))

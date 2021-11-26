@@ -15,6 +15,7 @@ import (
 	imagerepository "github.com/jorge-jcc/cinemax/cinemax-backend/internal/adapters/imageRepository"
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/adapters/repository"
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/adapters/server"
+	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/adapters/server/middlewares"
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/adapters/server/util/token"
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/application"
 )
@@ -27,6 +28,7 @@ func main() {
 	defer db.Close()
 
 	router := gin.Default()
+	router.Use(middlewares.CORS())
 
 	repository := repository.NewRepository(db)
 	imageRepository := imagerepository.NewImageRepository("/home")

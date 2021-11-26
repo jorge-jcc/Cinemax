@@ -55,3 +55,48 @@ func (h *handler) SeleccionarAsiento(c *gin.Context) {
 		"transaccionId": req.TransaccionId,
 	})
 }
+
+func (h *handler) DeseleccionarAsiento(c *gin.Context) {
+	type transaccionIdReq struct {
+		TransaccionId string `json:"transaccionId" binding:"required"`
+		AsientoID     string `json:"asientoId" binding:"required"`
+	}
+	var req transaccionIdReq
+	if ok := util.BindData(c, &req); !ok {
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	err := h.s.DeseleccionarAsiento(ctx, req.AsientoID, req.TransaccionId)
+	if err != nil {
+		log.Printf("Failed to deseleccionar asiento: %v\n", err)
+		c.JSON(domain.Status(err), gin.H{
+			"error": err,
+		})
+		return
+	}
+	c.Status(http.StatusNoContent)
+}
+
+func (h *handler) DeshacerTransaccion(c *gin.Context) {
+	type transaccionIdReq struct {
+		TransaccionId string `json:"transaccionId" binding:"required"`
+	}
+	var req transaccionIdReq
+	if ok := util.BindData(c, &req); !ok {
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	err := h.s.DeshacerTransaccion(ctx, req.TransaccionId)
+	if err != nil {
+		log.Printf("Error al deshacer la transaccion: %v\n", err)
+		c.JSON(domain.Status(err), gin.H{
+			"error": err,
+		})
+		return
+	}
+	c.Status(http.StatusNoContent)
+}

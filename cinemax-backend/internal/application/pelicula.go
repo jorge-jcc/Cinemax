@@ -48,6 +48,10 @@ func (s *service) GetPeliculasByNombre(ctx context.Context, nombre string, limit
 	return s.r.GetPeliculasByNombre(ctx, nombre, limit, offset)
 }
 
+func (s *service) GetPeliculasEnCartelera(ctx context.Context) ([]domain.Pelicula, error) {
+	return s.r.GetPeliculasEnCartelera(ctx)
+}
+
 func (s *service) GetClasificaciones(ctx context.Context) ([]domain.Clasificacion, error) {
 	return s.r.GetClasificaciones(ctx)
 }

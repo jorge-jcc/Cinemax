@@ -2,7 +2,6 @@ package application
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/domain"
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/ports"
@@ -17,14 +16,16 @@ func (s *service) SeleccionarAsiento(ctx context.Context, asientoId string, tran
 		// Se verifica que el asiento exista
 		a, err := r.GetAsientoByID(ctx, asientoId)
 		if err != nil {
-			fmt.Println("Aqui", err)
 			return err
 		}
 		// Se verifica que el asiento este disponible
 		ok := r.DisponibilidadAsiento(ctx, a)
 		if !ok {
 			// revisar el formato del error
-			return domain.NewConflict("asignacion_asiento_id", asientoId)
+			return &domain.Error{
+				Type:    domain.Conflict,
+				Message: "El asiento ya no se encuentra disponible",
+			}
 		}
 		// si transaccionId esta vacio, se crea una nueva transaccion, sino,
 		// se verifica que la transaccion exista y además aún este vigente
@@ -51,5 +52,35 @@ func (s *service) SeleccionarAsiento(ctx context.Context, asientoId string, tran
 		}
 		// Se actualiza el tiempo de la ultima modificación de la transacción
 		return r.UpdateTimeTransaction(ctx, *transaccionId)
+	})
+}
+
+func (s *service) DeseleccionarAsiento(ctx context.Context, asientoId, transaccionId string) error {
+	// TODO Validar que la transaccion corresponde al usuario
+	return s.r.Transaction(ctx, func(c context.Context, r ports.Repository) error {
+		err := s.r.ValidarTransaccion(ctx, transaccionId)
+		if err != nil {
+			return err
+		}
+		a, err := r.GetAsientoByID(ctx, asientoId)
+		if err != nil {
+			return err
+		}
+
+		if transaccionId != a.TransaccionId {
+			return &domain.Error{
+				Type:    domain.NotFound,
+				Message: "La transacción no corresponde asiento",
+			}
+		}
+
+		a.StatusID = "1" // Disponible
+		return r.UpdateStatusAsiento(ctx, a)
+	})
+}
+
+func (s *service) DeshacerTransaccion(ctx context.Context, transaccionId string) error {
+	return s.r.Transaction(ctx, func(c context.Context, r ports.Repository) error {
+		return r.DeshacerTransaccion(ctx, transaccionId)
 	})
 }

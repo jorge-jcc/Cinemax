@@ -19,14 +19,19 @@ type Service interface {
 	LoadImage(ctx context.Context, peliculaId string, file *multipart.FileHeader) error
 	DownloadImage(ctx context.Context, peliculaId string) (*os.File, error)
 	GetPeliculasByNombre(ctx context.Context, nombre string, limit, offset int16) ([]domain.Pelicula, error)
+	GetPeliculasEnCartelera(ctx context.Context) ([]domain.Pelicula, error)
 	GetClasificaciones(ctx context.Context) ([]domain.Clasificacion, error)
 	GetIdiomas(ctx context.Context) ([]domain.Idioma, error)
 	GetGeneros(ctx context.Context) ([]domain.Genero, error)
 
 	GetSalas(ctx context.Context) ([]domain.Sala, error)
+	GetSalaByFuncionId(ctx context.Context, funcionId string) (*domain.Sala, error)
+
 	CreateFunction(ctx context.Context, horaInicio time.Time, peliculaId, salaId string) error
 	GetFuncionesByPeliculaAndFechaInicio(ctx context.Context, peliculaId string, fecha time.Time) ([]domain.Funcion, error)
 
 	GetAsientosByFuncion(ctx context.Context, funcionId string) ([]domain.AsignacionAsiento, error)
 	SeleccionarAsiento(ctx context.Context, asientoId string, transaccionId *string) error
+	DeseleccionarAsiento(ctx context.Context, asientoId, transaccionId string) error
+	DeshacerTransaccion(ctx context.Context, transaccionId string) error
 }

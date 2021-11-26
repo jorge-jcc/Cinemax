@@ -20,12 +20,14 @@ type Repository interface {
 	UpdateImage(ctx context.Context, id, imagen string) error
 	GetPeliculaById(ctx context.Context, id string) (*domain.Pelicula, error)
 	GetPeliculasByNombre(ctx context.Context, nombre string, limit, offset int16) ([]domain.Pelicula, error)
+	GetPeliculasEnCartelera(ctx context.Context) ([]domain.Pelicula, error)
 	GetClasificaciones(ctx context.Context) ([]domain.Clasificacion, error)
 	GetIdiomas(ctx context.Context) ([]domain.Idioma, error)
 	GetGeneros(ctx context.Context) ([]domain.Genero, error)
 
 	GetSalas(ctx context.Context) ([]domain.Sala, error)
 	GetSalaById(ctx context.Context, id string) (*domain.Sala, error)
+	GetSalaByFuncionId(ctx context.Context, funcionId string) (*domain.Sala, error)
 
 	CreateFunction(ctx context.Context, f *domain.Funcion) error
 	DisponibilidadFuncion(ctx context.Context, f *domain.Funcion) bool
@@ -40,4 +42,5 @@ type Repository interface {
 	GetNewTransactionID(ctx context.Context) (string, error)
 	ValidarTransaccion(ctx context.Context, transaccionId string) error
 	UpdateTimeTransaction(ctx context.Context, transaccionId string) error
+	DeshacerTransaccion(ctx context.Context, transaccionId string) error
 }

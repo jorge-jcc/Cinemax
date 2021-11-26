@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -42,13 +43,16 @@ func (h *handler) CreateFunction(c *gin.Context) {
 }
 
 func (h *handler) SearchFuncionByPeliculaAndFecha(c *gin.Context) {
+	type resFuncion struct {
+		ID      string `json:"id"`
+		Horario string `json:"horario"`
+	}
+
 	var req searchFuncionReq
 	if ok := util.BindData(c, &req); !ok {
 		return
 	}
-	if req.Fecha.IsZero() {
-		req.Fecha = time.Now()
-	}
+	req.Fecha = time.Now()
 
 	ctx := c.Request.Context()
 
@@ -60,7 +64,18 @@ func (h *handler) SearchFuncionByPeliculaAndFecha(c *gin.Context) {
 		})
 		return
 	}
+	f := make([]resFuncion, len(funciones))
+	for i := range funciones {
+		f[i].ID = funciones[i].ID
+		f[i].Horario = fmt.Sprintf("%s %s",
+			funciones[i].FechaInicio.Format(time.Kitchen), funciones[i].Sala.Clave,
+		)
+	}
 	c.JSON(http.StatusOK, gin.H{
-		"funciones": funciones,
+		"funciones": f,
 	})
+}
+
+func (h *handler) GetDetallesSalaAndFuncion(c *gin.Context) {
+
 }

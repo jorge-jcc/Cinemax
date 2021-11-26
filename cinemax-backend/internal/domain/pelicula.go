@@ -6,18 +6,18 @@ import (
 
 type Pelicula struct {
 	ID                 string        `json:"id,omitempty" db:"PELICULA_ID"`
-	Nombre             string        `json:"nombre" db:"NOMBRE"`
-	Director           string        `json:"director" db:"DIRECTOR"`
-	Descripcion        string        `json:"descripcion" db:"DESCRIPCION"`
-	DuracionMinutos    int16         `json:"duracionMinutos" db:"DURACION_MINUTOS"`
-	Anio               string        `json:"anio" db:"ANIO"`
-	FechaDisponiblidad time.Time     `json:"fechaDisponibilidad" db:"FECHA_DISPONIBILIDAD"`
+	Nombre             string        `json:"nombre,omitempty" db:"NOMBRE"`
+	Director           string        `json:"director,omitempty" db:"DIRECTOR"`
+	Descripcion        string        `json:"descripcion,omitempty" db:"DESCRIPCION"`
+	DuracionMinutos    int16         `json:"duracionMinutos,omitempty" db:"DURACION_MINUTOS"`
+	Anio               string        `json:"anio,omitempty" db:"ANIO"`
+	FechaDisponiblidad time.Time     `json:"fechaDisponibilidad,omitempty" db:"FECHA_DISPONIBILIDAD"`
 	Imagen             string        `json:"imagen,omitempty" db:"IMAGEN"`
-	Resena             string        `json:"resena" db:"RESENA"`
-	Clasificacion      Clasificacion `json:"clasificacion" db:"CLASIFICACION"`
-	Idioma             Idioma        `json:"idioma" db:"IDIOMA"`
-	Subtitulo          Idioma        `json:"subtitulos" db:"SUBTITULO"`
-	Genero             Genero        `json:"genero" db:"GENERO"`
+	Resena             string        `json:"resena,omitempty" db:"RESENA"`
+	Clasificacion      Clasificacion `json:"clasificacion,omitempty" db:"CLASIFICACION"`
+	Idioma             Idioma        `json:"idioma,omitempty" db:"IDIOMA"`
+	Subtitulo          Idioma        `json:"subtitulos,omitempty" db:"SUBTITULO"`
+	Genero             Genero        `json:"genero,omitempty" db:"GENERO"`
 }
 
 type Clasificacion struct {
