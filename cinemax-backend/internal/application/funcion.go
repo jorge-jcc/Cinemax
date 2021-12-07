@@ -8,7 +8,7 @@ import (
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/ports"
 )
 
-func (s *service) CreateFunction(ctx context.Context, fechaInicio time.Time, peliculaId, salaId string) error {
+func (s *service) CreateFunction(ctx context.Context, fechaInicio time.Time, peliculaId, salaId, tipoFuncionId string) error {
 	sala, err := s.r.GetSalaById(ctx, salaId)
 	if err != nil {
 		return err
@@ -25,17 +25,18 @@ func (s *service) CreateFunction(ctx context.Context, fechaInicio time.Time, pel
 		FechaFin:    fechaFin,
 		Pelicula:    *p,
 		Sala:        *sala,
+		TipoFuncion: tipoFuncionId,
 	}
 
 	if ok := s.r.DisponibilidadFuncion(ctx, f); !ok {
 		return domain.NewConflict("funcion", salaId)
 	}
 	return s.r.Transaction(ctx, func(c context.Context, r ports.Repository) error {
-		err := s.r.CreateFunction(ctx, f)
+		err := r.CreateFunction(ctx, f)
 		if err != nil {
 			return err
 		}
-		return s.r.InicializarAsientos(c, f)
+		return r.InicializarAsientos(c, f)
 	})
 }
 

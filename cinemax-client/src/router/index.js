@@ -4,11 +4,30 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [
-
   {
     path: '/login',
     name: 'Login',
     component: () => import('../views/Login.vue')
+  },
+  {
+    path: '/funciones/create_funcion',
+    name: 'CreateFunciones',
+    component: () => import('../views/CreateFuncion.vue'),
+  },
+  {
+    path: '/funciones',
+    name: 'Funciones',
+    component: () => import('../views/Funciones.vue'),
+  },
+  {
+    path: '/peliculas/create_pelicula',
+    name: 'CreatePeliculas',
+    component: () => import('../views/CreatePelicula.vue')
+  },
+  {
+    path: '/peliculas',
+    name: 'Peliculas',
+    component: () => import('../views/Peliculas.vue'),
   },
   {
     path: '/',

@@ -125,3 +125,7 @@ func (s *mockRepository) GetSalaByFuncionId(ctx context.Context, funcionId strin
 func (s *mockRepository) DeshacerTransaccion(ctx context.Context, transaccionId string) error {
 	return nil
 }
+
+func (s *mockRepository) GetPreciosBoletos(ctx context.Context) ([]domain.PrecioBoleto, error) {
+	return nil, nil
+}

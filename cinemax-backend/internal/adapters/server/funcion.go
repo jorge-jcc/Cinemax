@@ -12,13 +12,14 @@ import (
 )
 
 type createFuncionReq struct {
-	HoraInicio time.Time `json:"horaInicio" binding:"required"`
-	PeliculaId string    `json:"peliculaId" binding:"required"`
-	SalaID     string    `json:"salaId" binding:"required"`
+	HoraInicio    time.Time `json:"horaInicio" binding:"required"`
+	PeliculaId    string    `json:"peliculaId" binding:"required"`
+	SalaID        string    `json:"salaId" binding:"required"`
+	TipoFuncionId string    `json:"tipoFuncionId" binding:"required"`
 }
 
 type searchFuncionReq struct {
-	PeliculaID string    `json:"peliculaId"`
+	PeliculaID string    `json:"peliculaId" binding:"required"`
 	Fecha      time.Time `json:"fecha"`
 }
 
@@ -31,7 +32,7 @@ func (h *handler) CreateFunction(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	err := h.s.CreateFunction(ctx, req.HoraInicio, req.PeliculaId, req.SalaID)
+	err := h.s.CreateFunction(ctx, req.HoraInicio, req.PeliculaId, req.SalaID, req.TipoFuncionId)
 	if err != nil {
 		log.Printf("Failed to create funcion: %v\n", err.Error())
 		c.JSON(domain.Status(err), gin.H{

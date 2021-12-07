@@ -1,9 +1,9 @@
 package domain
 
 type Boleto struct {
-	ID         string     `json:"id" db:"BOLETO_ID"`
-	Ticket     string     `json:"ticket" db:""`
-	TipoBoleto TipoBoleto `json:"tipoBoleto" db:"FUNCION_ID"`
+	ID           string `db:"BOLETO_ID"`
+	TipoBoletoId string `db:"TIPO_BOLETO_ID"`
+	AsientoId    string `db:"BOLETO_ASIENTO_ID"`
 }
 
 type TipoBoleto struct {
@@ -13,7 +13,8 @@ type TipoBoleto struct {
 }
 
 type PrecioBoleto struct {
-	Clave       string
-	Precio      float32
-	TipoFuncion string
+	ID            string  `json:"id" db:"TIPO_BOLETO_ID"`
+	Clave         string  `json:"clave" db:"CLAVE"`
+	Precio        float32 `json:"precio" db:"PRECIO"`
+	TipoFuncionID string  `json:"tipoFuncionIs" db:"TIPO_FUNCION_ID"`
 }

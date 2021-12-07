@@ -52,18 +52,22 @@ func (r *repository) GetAsientosByFuncion(ctx context.Context, funcionId string)
 
 func (r *repository) GetAsientoByID(ctx context.Context, asientoId string) (*domain.AsignacionAsiento, error) {
 	query := `
-		SELECT "ASIGNACION_ASIENTO_ID", "FUNCION_ID", "UPDATED_AT",
+		SELECT "AS"."ASIGNACION_ASIENTO_ID", "AS"."FUNCION_ID", "AS"."UPDATED_AT",
 		CASE
-			WHEN "TRANSACCION_ID" is NULL THEN 0
-			ELSE "TRANSACCION_ID"
-		END
-		AS "TRANSACCION_ID"
-		FROM "ASIGNACION_ASIENTO"
-		WHERE "ASIGNACION_ASIENTO_ID" = $1
+			WHEN "T"."TRANSACCION_ID" is NULL THEN 0
+			ELSE "T"."TRANSACCION_ID"
+		END AS "TRANSACCION_ID",
+		CASE
+			WHEN "AS"."STATUS_ASIENTO_ID" = 1 OR (EXTRACT(EPOCH FROM NOW() - "T"."UPDATED_AT")/60 >= 1 AND "AS"."STATUS_ASIENTO_ID" IN (2, 3)) THEN 'DISPONIBLE'
+			ELSE "S"."CLAVE"
+		END AS "STATUS"
+		FROM "ASIGNACION_ASIENTO" AS "AS"
+			JOIN "STATUS_ASIGNACION_ASIENTO" "S" ON "AS"."STATUS_ASIENTO_ID" = "S"."STATUS_ASIENTO_ID"
+			LEFT JOIN "TRANSACCION" AS "T" ON "AS"."TRANSACCION_ID" = "T"."TRANSACCION_ID"
+		WHERE "AS"."ASIGNACION_ASIENTO_ID" = $1
 	`
 	a := &domain.AsignacionAsiento{}
 	err := r.db.GetContext(ctx, a, query, asientoId)
-	fmt.Println(err)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Printf("Error asiento not found in database: %v\n", err)
@@ -94,6 +98,25 @@ func (r *repository) DisponibilidadAsiento(ctx context.Context, a *domain.Asigna
 	return result == 1
 }
 
+func (r *repository) GetStatusAsientoById(ctx context.Context, AsignacionAsientoId string) (domain.StatusAsiento, error) {
+	query := `
+		SELECT CASE
+			WHEN "AS"."STATUS_ASIENTO_ID" = 1 OR (EXTRACT(EPOCH FROM NOW() - "T"."UPDATED_AT")/60 >= 1 AND "AS"."STATUS_ASIENTO_ID" IN (2, 3)) THEN 'DISPONIBLE'
+			ELSE "S"."CLAVE"
+		END AS "status"
+		FROM "ASIGNACION_ASIENTO" AS "AS"
+			JOIN STATUS_ASIGNACION_ASIENTO "S" ON "AS"."STATUS_ASIGNACION_ASIENTO_ID" = "S"."STATUS_ASIGNACION_ASIENTO_ID"
+			LEFT JOIN "TRANSACCION" AS "T" ON "AS"."TRANSACCION_ID" = "T"."TRANSACCION_ID"
+		WHERE "ASIGNACION_ASIENTO_ID" = $1
+	`
+	var status domain.StatusAsiento
+	err := r.db.GetContext(ctx, &status, query, AsignacionAsientoId)
+	if err != nil {
+		return "", err
+	}
+	return status, nil
+}
+
 // Actualiza el status de un asiento
 func (r *repository) UpdateStatusAsiento(ctx context.Context, a *domain.AsignacionAsiento) error {
 	query := `
@@ -103,7 +126,7 @@ func (r *repository) UpdateStatusAsiento(ctx context.Context, a *domain.Asignaci
 				"UPDATED_AT" = NOW()
 		WHERE "ASIGNACION_ASIENTO_ID" = $3 AND "UPDATED_AT" = $4
 	`
-	result, err := r.db.ExecContext(ctx, query, a.StatusID, a.TransaccionId, a.ID, a.UpdatedAt)
+	result, err := r.db.ExecContext(ctx, query, a.StatusAsiento, a.TransaccionId, a.ID, a.UpdatedAt)
 	if err != nil {
 		return domain.NewInternal()
 	}
@@ -111,6 +134,28 @@ func (r *repository) UpdateStatusAsiento(ctx context.Context, a *domain.Asignaci
 		return &domain.Error{
 			Type:    domain.Conflict,
 			Message: "El asiento ya no se encuentra disponible",
+		}
+	}
+	return nil
+}
+
+// Actualiza el status de un asiento
+func (r *repository) UpdateBoletoIdAsiento(ctx context.Context, a *domain.AsignacionAsiento) error {
+	query := `
+		UPDATE "ASIGNACION_ASIENTO" SET 
+				"STATUS_ASIENTO_ID" = 4, 
+				"BOLETO_ID" = $1, 
+				"UPDATED_AT" = NOW()
+		WHERE "ASIGNACION_ASIENTO_ID" = $2 AND "UPDATED_AT" = $3
+	`
+	result, err := r.db.ExecContext(ctx, query, a.BoletoId, a.ID, a.UpdatedAt)
+	if err != nil {
+		return domain.NewInternal()
+	}
+	if rows, _ := result.RowsAffected(); rows != 1 {
+		return &domain.Error{
+			Type:    domain.Conflict,
+			Message: "El asiento cambio su estado mientras se completaba la transaccion",
 		}
 	}
 	return nil
@@ -146,12 +191,13 @@ func (r *repository) GetNewTransactionID(ctx context.Context) (string, error) {
 // ValidarTransaccion devulve un error si la transacción no existe o ya expiro
 func (r *repository) ValidarTransaccion(ctx context.Context, transaccionId string) error {
 	query := `
-		SELECT TO_NUMBER(TO_CHAR(NOW() - "UPDATED_AT", 'MI'), '99') 
+		SELECT EXTRACT(EPOCH FROM NOW() - "UPDATED_AT")/60
 		FROM "TRANSACCION" 
 		WHERE "TRANSACCION_ID" = $1
 	`
-	var result int
+	var result float32
 	err := r.db.GetContext(ctx, &result, query, transaccionId)
+	fmt.Println(err)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return domain.NewNotFound("transaccionId", transaccionId)

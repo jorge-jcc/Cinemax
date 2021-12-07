@@ -12,6 +12,7 @@ import (
 func TestJWTMarker(t *testing.T) {
 	maker := NewJWTMaker("PruebaSecreta")
 
+	id := "1"
 	email := "test@test.com"
 	duration := time.Minute
 
@@ -19,7 +20,7 @@ func TestJWTMarker(t *testing.T) {
 	expiredAt := issuedAt.Add(duration)
 
 	// Al crear un token
-	token, err := maker.CreateToken(email, duration)
+	token, err := maker.CreateToken(id, email, duration)
 	// err debe ser nil
 	require.NoError(t, err)
 	// token no debe ser un objeto vacío
@@ -47,7 +48,7 @@ func TestExpiredJWTToken(t *testing.T) {
 	maker := NewJWTMaker("PruebaSecreta")
 
 	// Al crear un token
-	token, err := maker.CreateToken("email@email.com", -time.Minute)
+	token, err := maker.CreateToken("1", "email@email.com", -time.Minute)
 	// err debe ser nil
 	require.NoError(t, err)
 	// token no debe ser un objeto vacío
@@ -66,7 +67,7 @@ func TestExpiredJWTToken(t *testing.T) {
 // TestInvalidJWTTokenAlgNone verfica el caso de un token invalido
 func TestInvalidJWTTokenAlgNone(t *testing.T) {
 	// Al crear un nuevo payload
-	payload, err := NewPayload("test@test.com", time.Minute)
+	payload, err := NewPayload("1", "test@test.com", time.Minute)
 	// err debe ser nil
 	require.NoError(t, err)
 

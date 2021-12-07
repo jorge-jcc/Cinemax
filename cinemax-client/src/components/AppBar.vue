@@ -1,12 +1,12 @@
 <template>
   <v-app-bar dark app color="red darken-4" flat>
     <v-avatar size="40">
-      <v-img src="@/assets/Imagen3.svg"></v-img>
+      <v-img src="../assets/Imagen3.svg"></v-img>
     </v-avatar>
     <h2 class="noselect" style="position:absolute; left: 62px">Cinemax</h2>
     <v-tabs centered class="ml-n9">
-      <v-tab v-for="link in links" :key="link">
-        {{ link }}
+      <v-tab v-for="link in links" :key="link.name" :to="link.path">
+        {{link.name}}
       </v-tab>
     </v-tabs>
     <router-link to="" style="position:absolute; right: 16px">
@@ -24,9 +24,9 @@ export default {
   name: "AppBar",
   data: () => ({
     links: [
-      'Taquilla',
-      'Funciones',
-      'Peliculas',
+      { name: 'Taquilla',  path: '/'},
+      { name: 'Funciones', path: '/funciones'},
+      { name: 'Peliculas', path: '/peliculas'},
     ],
   }),
   methods:{

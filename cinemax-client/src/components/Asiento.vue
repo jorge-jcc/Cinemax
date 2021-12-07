@@ -78,9 +78,10 @@ export default {
   computed: {
     ...mapState(["asientos"]),
     colorAsiento: function(){
-      return this.asiento.statusId === "DISPONIBLE" ? "disponible" :
-      this.asiento.statusId === "EN PROCESO" ? "ocupado":
-      this.asiento.statusId === "SELECCIONADO" ? "seleccionado": ""
+      return this.asiento.StatusAsiento === "DISPONIBLE" ? "disponible" :
+      this.asiento.StatusAsiento === "EN PROCESO" ? "ocupado":
+      this.asiento.StatusAsiento === "ASIGNADO" ? "ocupado":
+      this.asiento.StatusAsiento === "SELECCIONADO" ? "seleccionado": ""
     }
   },
   methods:{
@@ -88,15 +89,15 @@ export default {
     updateState: async function(){
       if (this.select){
         this.select = false
-        switch (this.asiento.statusId){
+        switch (this.asiento.StatusAsiento){
           case "DISPONIBLE": {
-            this.asiento.statusId = "SELECCIONADO"
+            this.asiento.StatusAsiento = "SELECCIONADO"
             await this.seleccionarAsiento(this.asiento)
             break
           }
           case "SELECCIONADO":{
             await this.deseleccionarAsiento(this.asiento).then(() => {
-              this.asiento.statusId = "DISPONIBLE"
+              this.asiento.StatusAsiento = "DISPONIBLE"
             })
             break
           }

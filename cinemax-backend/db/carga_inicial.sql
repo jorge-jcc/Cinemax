@@ -1,16 +1,17 @@
-INSERT INTO "TIPO_SALA" ("CLAVE", "DESCRIPCION") VALUES
-  ('N', 'Sala Normal'),
-  ('3D', 'Sala 3D');
+INSERT INTO "TIPO_FUNCION" ("CLAVE", "DESCRIPCION") VALUES
+  ('Normal', 'Sala Normal'),
+  ('3D', 'Sala 3D'),
+  ('4D', 'Sala 3D');
 
-INSERT INTO "SALA" ("CLAVE", "NOMBRE", "UBICACION", "TIPO_SALA_ID") VALUES 
-  ('S1', 'SALA 1', 'Junto a la tienda de dulces', 1),
-  ('S2', 'SALA 2', 'A lado de sala 1 (tienda de dulces)', 1),
-  ('S3', 'SALA 3', 'Junto al baño de hombres', 1),
-  ('S4', 'SALA 4', 'Junto al baño de mujeres', 1),
-  ('S5', 'SALA 5', 'Pasillo derecho al fondo', 1),
-  ('S6', 'SALA 6', 'Pasillo derecho al fondo', 2),
-  ('S7', 'SALA 7', 'Pasillo izquierdo al fondo', 2),
-  ('S8', 'SALA 8', 'Pasillo izquiero al fondo', 2);
+INSERT INTO "SALA" ("CLAVE", "NOMBRE", "UBICACION") VALUES 
+  ('S1', 'SALA 1', 'Junto a la tienda de dulces'),
+  ('S2', 'SALA 2', 'A lado de sala 1 (tienda de dulces)'),
+  ('S3', 'SALA 3', 'Junto al baño de hombres'),
+  ('S4', 'SALA 4', 'Junto al baño de mujeres'),
+  ('S5', 'SALA 5', 'Pasillo derecho al fondo'),
+  ('S6', 'SALA 6', 'Pasillo derecho al fondo'),
+  ('S7', 'SALA 7', 'Pasillo izquierdo al fondo'),
+  ('S8', 'SALA 8', 'Pasillo izquiero al fondo');
 
 INSERT INTO "ASIENTO" ("CLAVE", "SALA_ID") VALUES
   ('A1', 1),  ('B1', 1),  ('C1', 1),  ('D1', 1),  ('E1', 1),  ('F1', 1),  ('G1', 1),  ('H1', 1),  ('I1', 1),  ('J1', 1),  ('K1', 1),  ('L1', 1), 
@@ -161,7 +162,7 @@ INSERT INTO "TIPO_BOLETO" ("CLAVE", "DESCRIPCION") VALUES
   ('NIÑO', 'Boleto para niños menores de 10 años'),
   ('DESCUENTO', 'Boleto con algun descuento');
 
-INSERT INTO "PRECIO_BOLETO" ("PRECIO", "TIPO_BOLETO_ID", "TIPO_SALA_ID") VALUES
+INSERT INTO "PRECIO_BOLETO" ("PRECIO", "TIPO_BOLETO_ID", "TIPO_FUNCION_ID") VALUES
   (50, 1, 1), (80, 2, 1), (35, 3, 1), (35, 4, 1), (35, 5, 1),
   (80, 1, 2), (120, 2, 2), (60, 3, 2), (60, 4, 2), (60, 5, 2);
 

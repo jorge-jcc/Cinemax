@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/domain"
@@ -15,8 +16,10 @@ func (r *repository) CreatePelicula(ctx context.Context, p *domain.Pelicula) err
 		"ANIO", "FECHA_DISPONIBILIDAD", "RESENA", "CLASIFICACION_ID", 
 		"IDIOMA_ID", "SUBTITULO_ID", "GENERO_ID") 
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		RETURNING "PELICULA_ID"
 	`
-	_, err := r.db.ExecContext(ctx, query,
+	var result string
+	err := r.db.GetContext(ctx, &result, query,
 		p.Nombre, p.Director, p.Descripcion, p.DuracionMinutos,
 		p.Anio, p.FechaDisponiblidad, p.Resena, 1, 1, 1, 1,
 	)
@@ -26,6 +29,7 @@ func (r *repository) CreatePelicula(ctx context.Context, p *domain.Pelicula) err
 		}
 		return domain.NewInternal()
 	}
+	p.ID = result
 	return nil
 }
 
@@ -45,13 +49,22 @@ func (r *repository) UpdateImage(ctx context.Context, id, imagen string) error {
 
 func (r *repository) GetPeliculaById(ctx context.Context, id string) (*domain.Pelicula, error) {
 	query := `
-		SELECT "PELICULA_ID", "NOMBRE", "DIRECTOR", "DESCRIPCION", "DURACION_MINUTOS", "ANIO", 
-			"FECHA_DISPONIBILIDAD", "RESENA",
+	SELECT "P"."PELICULA_ID", "P"."NOMBRE", "P"."DIRECTOR", "P"."DESCRIPCION", "P"."DURACION_MINUTOS",
+		"P"."ANIO", "P"."FECHA_DISPONIBILIDAD", "P"."RESENA",
+		"I"."NOMBRE" AS "IDIOMA.NOMBRE", "S"."NOMBRE" AS "SUBTITULO.NOMBRE",
+		"G"."NOMBRE" AS "GENERO.NOMBRE", "C"."CLAVE" AS "CLASIFICACION.CLAVE",
+		"C"."DESCRIPCION" AS "CLASIFICACION.DESCRIPCION",
 		CASE
 			WHEN "IMAGEN" is NULL THEN ''
 			ELSE "IMAGEN"
 		END AS "IMAGEN"
-		FROM "PELICULA" WHERE "PELICULA_ID" = $1
+		FROM "PELICULA" AS "P", "CLASIFICACION" AS "C", "IDIOMA" AS "I", "IDIOMA" AS "S",
+			"GENERO" AS "G"
+		WHERE "P"."CLASIFICACION_ID" = "C"."CLASIFICACION_ID"
+			AND "P"."IDIOMA_ID" = "I"."IDIOMA_ID"
+			AND "P"."SUBTITULO_ID" = "S"."IDIOMA_ID"
+			AND "P"."GENERO_ID" = "G"."GENERO_ID"
+			AND "P"."PELICULA_ID" = $1
 	`
 	p := &domain.Pelicula{}
 	err := r.db.GetContext(ctx, p, query, id)
@@ -67,7 +80,7 @@ func (r *repository) GetPeliculaById(ctx context.Context, id string) (*domain.Pe
 
 func (r *repository) GetPeliculasByNombre(ctx context.Context, nombre string, limit, offset int16) ([]domain.Pelicula, error) {
 	query := `
-		SELECT "P"."NOMBRE", "P"."DIRECTOR", "P"."DESCRIPCION", "P"."DURACION_MINUTOS",
+		SELECT "P"."PELICULA_ID", "P"."NOMBRE", "P"."DIRECTOR", "P"."DESCRIPCION", "P"."DURACION_MINUTOS",
 			"P"."ANIO", "P"."FECHA_DISPONIBILIDAD", "P"."RESENA",
 			"I"."NOMBRE" AS "IDIOMA.NOMBRE", "S"."NOMBRE" AS "SUBTITULO.NOMBRE",
 			"G"."NOMBRE" AS "GENERO.NOMBRE", "C"."CLAVE" AS "CLASIFICACION.CLAVE",
@@ -78,10 +91,13 @@ func (r *repository) GetPeliculasByNombre(ctx context.Context, nombre string, li
 			AND "P"."IDIOMA_ID" = "I"."IDIOMA_ID"
 			AND "P"."SUBTITULO_ID" = "S"."IDIOMA_ID"
 			AND "P"."GENERO_ID" = "G"."GENERO_ID"
-			AND LOWER("P"."NOMBRE") LIKE LOWER($1) LIMIT $2 OFFSET $3
+			AND LOWER("P"."NOMBRE") LIKE LOWER($1) 
+		ORDER BY "PELICULA_ID" DESC
+		LIMIT $2 OFFSET $3
 	`
 	var peliculas []domain.Pelicula
-	err := r.db.SelectContext(ctx, &peliculas, query, "%"+nombre+"%", 20, 0)
+	err := r.db.SelectContext(ctx, &peliculas, query, "%"+nombre+"%", limit, offset)
+	fmt.Println(err)
 	if err != nil {
 		return nil, domain.NewInternal()
 	}
@@ -89,12 +105,19 @@ func (r *repository) GetPeliculasByNombre(ctx context.Context, nombre string, li
 }
 
 func (r *repository) GetPeliculasEnCartelera(ctx context.Context) ([]domain.Pelicula, error) {
-	// TO_CHAR("F"."FECHA_INICIO", 'YYYY-MM-DD') = TO_CHAR(NOW(), 'YYYY-MM-DD')
 	query := `
-		SELECT DISTINCT "P"."PELICULA_ID", "P"."NOMBRE" 
-		FROM "PELICULA" AS "P"
-			JOIN "FUNCION" AS "F" ON "P"."PELICULA_ID" = "F"."PELICULA_ID"
-		WHERE TO_CHAR("F"."FECHA_INICIO", 'YYYY-MM-DD') = TO_CHAR(NOW(), 'YYYY-MM-DD')
+	SELECT DISTINCT "P"."PELICULA_ID", "P"."NOMBRE", "P"."DURACION_MINUTOS",
+	"I"."NOMBRE" AS "IDIOMA.NOMBRE", "S"."NOMBRE" AS "SUBTITULO.NOMBRE",
+	"G"."NOMBRE" AS "GENERO.NOMBRE", "C"."CLAVE" AS "CLASIFICACION.CLAVE",
+	"C"."DESCRIPCION" AS "CLASIFICACION.DESCRIPCION"
+	FROM "PELICULA" AS "P", "CLASIFICACION" AS "C", "IDIOMA" AS "I", "IDIOMA" AS "S",
+		"GENERO" AS "G", "FUNCION" AS "F"
+	WHERE "P"."CLASIFICACION_ID" = "C"."CLASIFICACION_ID"
+		AND "P"."IDIOMA_ID" = "I"."IDIOMA_ID"
+		AND "P"."SUBTITULO_ID" = "S"."IDIOMA_ID"
+		AND "P"."GENERO_ID" = "G"."GENERO_ID"
+		AND "P"."PELICULA_ID" = "F"."PELICULA_ID"
+		AND TO_CHAR("F"."FECHA_INICIO", 'YYYY-MM-DD') = TO_CHAR(NOW(), 'YYYY-MM-DD')
 	`
 	var peliculas []domain.Pelicula
 	err := r.db.SelectContext(ctx, &peliculas, query)

@@ -10,12 +10,12 @@ import (
 
 func (r *repository) CreateFunction(ctx context.Context, f *domain.Funcion) error {
 	query := `
-		INSERT INTO "FUNCION" ("FECHA_INICIO", "FECHA_FIN", "PELICULA_ID", "SALA_ID")
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO "FUNCION" ("FECHA_INICIO", "FECHA_FIN", "PELICULA_ID", "SALA_ID", "TIPO_FUNCION_ID")
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING "FUNCION_ID"
 	`
 	err := r.db.GetContext(ctx, f, query,
-		f.FechaInicio, f.FechaFin, f.Pelicula.ID, f.Sala.ID,
+		f.FechaInicio, f.FechaFin, f.Pelicula.ID, f.Sala.ID, f.TipoFuncion,
 	)
 	if err != nil {
 		return domain.NewInternal()
@@ -32,6 +32,7 @@ func (r *repository) DisponibilidadFuncion(ctx context.Context, f *domain.Funcio
 	`
 	var result int
 	err := r.db.GetContext(ctx, &result, query, f.Sala.ID, f.FechaInicio, f.FechaFin)
+	fmt.Println(result)
 	if err != nil {
 		return false
 	}
@@ -44,7 +45,8 @@ func (r *repository) GetFuncionesByPeliculaAndFechaInicio(
 	query := `
 		select "FUNCION_ID", "FECHA_INICIO", "FECHA_FIN", 
 			"PELICULA_ID" as "PELICULA.PELICULA_ID", 
-			"CLAVE" AS "SALA.CLAVE"
+			"CLAVE" AS "SALA.CLAVE",
+			"TIPO_FUNCION_ID"
 		from "FUNCION" "F"
 			JOIN "SALA" "S" ON "F"."SALA_ID" = "S"."SALA_ID"
 		where "PELICULA_ID" = $1
@@ -55,6 +57,5 @@ func (r *repository) GetFuncionesByPeliculaAndFechaInicio(
 	if err != nil {
 		return nil, domain.NewInternal()
 	}
-	fmt.Println(len(funciones))
 	return funciones, nil
 }

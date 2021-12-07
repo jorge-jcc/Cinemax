@@ -63,7 +63,44 @@ func (h *handler) CreatePelicula(c *gin.Context) {
 		})
 		return
 	}
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, gin.H{
+		"peliculaId": p.ID,
+	})
+}
+
+func (h *handler) GetPeliculaIdByName(c *gin.Context) {
+	type response struct {
+		Id     string `json:"id"`
+		Nombre string `json:"nombre"`
+	}
+
+	var req reqSearchPelicula
+	if ok := util.BindData(c, &req); !ok {
+		return
+	}
+	if req.Limit == 0 {
+		req.Limit = 20
+	}
+
+	ctx := c.Request.Context()
+
+	peliculas, err := h.s.GetPeliculasByNombre(ctx, req.Nombre, req.Limit, req.Offset)
+	if err != nil {
+		log.Printf("Failed to get peliculas: %v\n", err)
+		c.JSON(domain.Status(err), gin.H{
+			"error": err,
+		})
+		return
+	}
+	p := make([]response, len(peliculas))
+	for i := range peliculas {
+		p[i].Id = peliculas[i].ID
+		p[i].Nombre = peliculas[i].Nombre
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"peliculas": p,
+	})
 }
 
 func (h *handler) SearchPeliculasByName(c *gin.Context) {
@@ -92,26 +129,38 @@ func (h *handler) SearchPeliculasByName(c *gin.Context) {
 
 func (h *handler) GetPeliculasEnCartelera(c *gin.Context) {
 	type resPelicula struct {
-		ID     string `json:"id"`
-		Nombre string `json:"nombre"`
+		ID              string   `json:"id"`
+		Nombre          string   `json:"nombre"`
+		Clasificacion   string   `json:"clasificacion"`
+		DuracionMinutos int16    `json:"duracionMinutos"`
+		Genero          string   `json:"genero"`
+		Idioma          string   `json:"idioma"`
+		Subtitulo       string   `json:"subtitulo"`
+		Horarios        []string `json:"horarios"`
 	}
 	ctx := c.Request.Context()
 
-	peliculas, err := h.s.GetPeliculasEnCartelera(ctx)
+	cartelera, err := h.s.GetPeliculasEnCartelera(ctx)
 	if err != nil {
-		log.Printf("Failed to get peliculas: %v\n", err)
+		log.Printf("Failed to get cartelera: %v\n", err)
 		c.JSON(domain.Status(err), gin.H{
 			"error": err,
 		})
 		return
 	}
-	p := make([]resPelicula, len(peliculas))
-	for i := range peliculas {
-		p[i].ID = peliculas[i].ID
-		p[i].Nombre = peliculas[i].Nombre
+	ca := make([]resPelicula, len(cartelera))
+	for i := range cartelera {
+		ca[i].ID = cartelera[i].ID
+		ca[i].Nombre = cartelera[i].Nombre
+		ca[i].Clasificacion = cartelera[i].Clasificacion.Clave
+		ca[i].DuracionMinutos = cartelera[i].DuracionMinutos
+		ca[i].Genero = cartelera[i].Genero.Nombre
+		ca[i].Idioma = cartelera[i].Idioma.Nombre
+		ca[i].Subtitulo = cartelera[i].Subtitulo.Nombre
+		ca[i].Horarios = cartelera[i].Horarios
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"peliculas": p,
+		"peliculas": ca,
 	})
 }
 

@@ -25,7 +25,7 @@ type Repository interface {
 	GetIdiomas(ctx context.Context) ([]domain.Idioma, error)
 	GetGeneros(ctx context.Context) ([]domain.Genero, error)
 
-	GetSalas(ctx context.Context) ([]domain.Sala, error)
+	GetSalasDisponibles(ctx context.Context, fechaInicio, fechaFin time.Time) ([]domain.Sala, error)
 	GetSalaById(ctx context.Context, id string) (*domain.Sala, error)
 	GetSalaByFuncionId(ctx context.Context, funcionId string) (*domain.Sala, error)
 
@@ -36,6 +36,7 @@ type Repository interface {
 	InicializarAsientos(ctx context.Context, f *domain.Funcion) error
 	GetAsientosByFuncion(ctx context.Context, funcionId string) ([]domain.AsignacionAsiento, error)
 	GetAsientoByID(ctx context.Context, asientoId string) (*domain.AsignacionAsiento, error)
+	GetStatusAsientoById(ctx context.Context, AsignacionAsientoId string) (domain.StatusAsiento, error)
 	DisponibilidadAsiento(ctx context.Context, a *domain.AsignacionAsiento) bool
 	UpdateStatusAsiento(ctx context.Context, a *domain.AsignacionAsiento) error
 
@@ -43,4 +44,9 @@ type Repository interface {
 	ValidarTransaccion(ctx context.Context, transaccionId string) error
 	UpdateTimeTransaction(ctx context.Context, transaccionId string) error
 	DeshacerTransaccion(ctx context.Context, transaccionId string) error
+
+	GetPreciosBoletos(ctx context.Context) ([]domain.PrecioBoleto, error)
+	CreateTicket(ctx context.Context, ticket *domain.Ticket) error
+	CreateBoleto(ctx context.Context, ticketId, tipoBoletoId string) (string, error)
+	UpdateBoletoIdAsiento(ctx context.Context, a *domain.AsignacionAsiento) error
 }

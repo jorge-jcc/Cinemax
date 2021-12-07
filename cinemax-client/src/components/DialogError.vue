@@ -5,7 +5,7 @@
           Ocurrio un error
         </v-card-title>
         <v-card-text>
-          {{transactionErrorMessage}}
+          {{dialogErrorMessage}}
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -26,18 +26,18 @@ export default {
 
   }),
   computed: {
-    ...mapState(["transactionError", "transactionErrorMessage"]),
+    ...mapState(["dialogError", "dialogErrorMessage"]),
     showDialog: {
       get: function () {
-        return this.transactionError
+        return this.dialogError
       },
       set: function () {
-        this.setTransactionError(false)
+        this.setDialogError(false)
       },
     },
   },
   methods:{
-    ...mapMutations(["setTransactionError"]),
+    ...mapMutations(["setDialogError"]),
   }
 }
 </script>

@@ -3,15 +3,25 @@ package server
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/adapters/server/util"
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/domain"
 )
 
+type salasReq struct {
+	PeliculaId  string    `json:"peliculaId" binding:"required"`
+	FechaInicio time.Time `json:"fechaInicio" binding:"required"`
+}
+
 func (h *handler) GetSalas(c *gin.Context) {
+	var req salasReq
+	if ok := util.BindData(c, &req); !ok {
+		return
+	}
 	ctx := c.Request.Context()
-	salas, err := h.s.GetSalas(ctx)
+	salas, err := h.s.GetSalas(ctx, req.FechaInicio, req.PeliculaId)
 	if err != nil {
 		log.Printf("Failed to get salas %v\n", err)
 		c.JSON(domain.Status(err), gin.H{

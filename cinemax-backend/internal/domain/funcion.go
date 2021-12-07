@@ -8,4 +8,5 @@ type Funcion struct {
 	FechaFin    time.Time `json:"fechaFin" db:"FECHA_FIN"`
 	Pelicula    Pelicula  `json:"pelicula" db:"PELICULA"`
 	Sala        Sala      `json:"sala" db:"SALA"`
+	TipoFuncion string    `json:"tipoFuncion" db:"TIPO_FUNCION_ID"`
 }

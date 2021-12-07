@@ -6,6 +6,7 @@ import (
 	"mime/multipart"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/domain"
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/ports"
@@ -23,11 +24,11 @@ func (s *service) LoadImage(ctx context.Context, id string, file *multipart.File
 	extension := strings.Split(file.Filename, ".")[1]
 	fileName := fmt.Sprintf("pelicula_%s.%s", id, extension)
 	return s.r.Transaction(ctx, func(c context.Context, r ports.Repository) error {
-		err := r.UpdateImage(ctx, id, fileName)
+		err := r.UpdateImage(c, id, fileName)
 		if err != nil {
 			return err
 		}
-		return s.i.LoadImage(ctx, fileName, file)
+		return s.i.LoadImage(c, fileName, file)
 	})
 }
 
@@ -48,8 +49,23 @@ func (s *service) GetPeliculasByNombre(ctx context.Context, nombre string, limit
 	return s.r.GetPeliculasByNombre(ctx, nombre, limit, offset)
 }
 
-func (s *service) GetPeliculasEnCartelera(ctx context.Context) ([]domain.Pelicula, error) {
-	return s.r.GetPeliculasEnCartelera(ctx)
+func (s *service) GetPeliculasEnCartelera(ctx context.Context) ([]domain.Cartelera, error) {
+	p, err := s.r.GetPeliculasEnCartelera(ctx)
+	if err != nil {
+		return nil, err
+	}
+	c := make([]domain.Cartelera, len(p))
+	for i := range p {
+		f, err := s.r.GetFuncionesByPeliculaAndFechaInicio(ctx, p[i].ID, time.Now())
+		if err != nil {
+			return nil, err
+		}
+		c[i].Pelicula = p[i]
+		for j := range f {
+			c[i].Horarios = append(c[i].Horarios, f[j].FechaInicio.Format("3:04 PM"))
+		}
+	}
+	return c, nil
 }
 
 func (s *service) GetClasificaciones(ctx context.Context) ([]domain.Clasificacion, error) {

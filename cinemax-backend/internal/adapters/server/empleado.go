@@ -61,7 +61,7 @@ func (h *handler) CreateEmpleado(c *gin.Context) {
 		})
 		return
 	}
-	t, err := h.t.CreateToken(e.Email, time.Hour*24)
+	t, err := h.t.CreateToken(e.Id, e.Email, time.Hour*24)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -85,7 +85,7 @@ func (h *handler) LoginEmpleado(c *gin.Context) {
 		})
 		return
 	}
-	t, err := h.t.CreateToken(e.Email, time.Hour*24)
+	t, err := h.t.CreateToken(e.Id, e.Email, time.Hour*24)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

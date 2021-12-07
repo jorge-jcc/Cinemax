@@ -14,3 +14,13 @@ export function getFuncionesByPeliculaId(peliculaId){
     }
   })
 }
+
+export function createFuncionAPI(peliculaId, salaId, horaInicio, tipoFuncionId) {
+  const url = `${API_HOST}/funcion/create`;
+  const data = { peliculaId, salaId, horaInicio, tipoFuncionId }
+  return axios.post(url, data, {
+    headers: {
+      'Authorization': `Bearer ${getTokenApi()}`
+    }
+  })
+}

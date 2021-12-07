@@ -9,7 +9,7 @@
               <slot></slot>
             </v-sheet>
           </v-col>
-           <v-col>
+           <v-col cols="12" sm="4">
             <div style="position: sticky; top: 4rem;">
               <v-sheet rounded="lg" min-height="268" class="">
               <slot name="right"></slot>

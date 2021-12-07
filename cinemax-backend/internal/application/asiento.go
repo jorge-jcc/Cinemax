@@ -42,7 +42,7 @@ func (s *service) SeleccionarAsiento(ctx context.Context, asientoId string, tran
 		}
 
 		// Se actualiza y transaccionId del asiento
-		a.StatusID = "2" // 'SELECCIONADO'
+		a.StatusAsiento = "2" // 'SELECCIONADO'
 		a.TransaccionId = *transaccionId
 
 		// Se actualiza el estado del asiento en la BD
@@ -74,7 +74,7 @@ func (s *service) DeseleccionarAsiento(ctx context.Context, asientoId, transacci
 			}
 		}
 
-		a.StatusID = "1" // Disponible
+		a.StatusAsiento = "1" // Disponible
 		return r.UpdateStatusAsiento(ctx, a)
 	})
 }

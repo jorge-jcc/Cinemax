@@ -29,12 +29,8 @@ export function logoutApi(){
 
 // isExpired devuelve true si el token ya expiro, false si no
 function isExpired(token){
-  const { exp } = jwtDecode(token);
-  const expire = exp * 1000;
-  const timeout = expire - Date.now();
-  if (timeout < 0) 
-    return true
-  return false
+  const { expired_at } = jwtDecode(token);
+  return new Date(expired_at) < Date.now()
 }
 
 // isUserLogedApi Verifica el token se encuentre almacenado en el navegador

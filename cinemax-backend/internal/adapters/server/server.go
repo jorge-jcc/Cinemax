@@ -38,16 +38,18 @@ func (h *handler) registerRouter(e *gin.Engine) {
 	pelicula.Use(middlewares.Auth(h.t))
 	pelicula.POST("/registrar", h.CreatePelicula)
 	pelicula.POST("/load_image", h.LoadImagen)
-	pelicula.GET("/image", h.DownloadImagen)
+	pelicula.POST("/search/id", h.GetPeliculaIdByName)
 	pelicula.POST("/search", h.SearchPeliculasByName)
 	pelicula.GET("/clasificaciones", h.GetClasificaciones)
 	pelicula.GET("/idiomas", h.GetIdiomas)
 	pelicula.GET("/generos", h.GetGeneros)
 	pelicula.GET("/cartelera", h.GetPeliculasEnCartelera)
 
-	sala := e.Group("/sala")
+	e.GET("/pelicula/image", h.DownloadImagen)
+
+	sala := e.Group("/salas")
 	sala.Use(middlewares.Auth(h.t))
-	sala.GET("", h.GetSalas)
+	sala.POST("", h.GetSalas)
 	sala.GET("/by_funcion", h.GetSalaByFuncionID)
 
 	funcion := e.Group("/funcion")
@@ -62,13 +64,13 @@ func (h *handler) registerRouter(e *gin.Engine) {
 	asientos.DELETE("", h.DeseleccionarAsiento)
 	asientos.POST("/deshacer", h.DeshacerTransaccion)
 
-	taquilla := e.Group("/taquilla")
-	taquilla.Use(middlewares.Auth(h.t))
-	taquilla.GET("/ping", func(c *gin.Context) {
-		h.s.Ping()
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	boleto := e.Group("/boleto")
+	boleto.Use(middlewares.Auth(h.t))
+	boleto.GET("", h.GetPrecios)
+
+	ticket := e.Group("/ticket")
+	ticket.Use(middlewares.Auth(h.t))
+	ticket.POST("/iniciar_compra", h.IniciarCompra)
+	ticket.POST("/crear_ticket", h.CreateTicket)
 
 }

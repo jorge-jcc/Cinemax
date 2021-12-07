@@ -2,26 +2,36 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/domain"
 )
 
-func (r *repository) GetPreciosBoletos(ctx context.Context) {
+func (r *repository) GetPreciosBoletos(ctx context.Context) ([]domain.PrecioBoleto, error) {
 	query := `
-	SELECT "CLAVE", "PRECIO", "SALA_ID", 
-		CASE
-			WHEN "AS"."STATUS_ASIENTO_ID" = 1 OR (EXTRACT(EPOCH FROM NOW() - "T"."UPDATED_AT")/60 >= 1 AND "AS"."STATUS_ASIENTO_ID" IN (2, 3)) THEN 'DISPONIBLE'
-			WHEN "AS"."STATUS_ASIENTO_ID" IN (2, 3) THEN 'EN PROCESO'
-			WHEN "AS"."STATUS_ASIENTO_ID" = 4 THEN 'ASIGNADO'
-			ELSE 'DESCONOCIDO'
-		END
-		AS "STATUS"
-	FROM "ASIGNACION_ASIENTO" AS "AS" 
-		JOIN "ASIENTO" AS "A" ON "AS"."ASIENTO_ID" = "A"."ASIENTO_ID" 
-		LEFT JOIN "TRANSACCION" AS "T" ON "AS"."TRANSACCION_ID" = "T"."TRANSACCION_ID"
-	WHERE "FUNCION_ID" = $1
-	ORDER BY SUBSTRING("CLAVE", 1, 1), SUBSTRING("CLAVE" FROM '([0-9]+)$')::INT 
+	SELECT "T"."TIPO_BOLETO_ID", "CLAVE", "PRECIO", "TIPO_FUNCION_ID"
+	FROM "TIPO_BOLETO" AS "T"
+		JOIN "PRECIO_BOLETO" AS "P" ON "T"."TIPO_BOLETO_ID" = "P"."TIPO_BOLETO_ID"
 `
-	var asientos []domain.AsignacionAsiento
-	r.db.SelectContext(ctx, &asientos, query)
+	var precios []domain.PrecioBoleto
+	err := r.db.SelectContext(ctx, &precios, query)
+	if err != nil {
+		return nil, domain.NewInternal()
+	}
+	return precios, nil
+}
+
+func (r *repository) CreateBoleto(ctx context.Context, ticketId, tipoBoletoId string) (string, error) {
+	query := `
+		INSERT INTO "BOLETO" ("TICKET_ID", "TIPO_BOLETO_ID") VALUES
+		($1, $2) RETURNING "BOLETO_ID"
+	`
+	var boletoId string
+	fmt.Println(ticketId, tipoBoletoId)
+	err := r.db.GetContext(ctx, &boletoId, query, ticketId, tipoBoletoId)
+	fmt.Println(err)
+	if err != nil {
+		return "", domain.NewInternal()
+	}
+	return boletoId, err
 }

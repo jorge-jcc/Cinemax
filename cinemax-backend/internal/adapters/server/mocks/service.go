@@ -71,7 +71,7 @@ func (s *mockService) GetGeneros(ctx context.Context) ([]domain.Genero, error) {
 func (s *mockService) GetSalas(ctx context.Context) ([]domain.Sala, error) {
 	return nil, nil
 }
-func (s *mockService) CreateFunction(ctx context.Context, horaInicio time.Time, peliculaId, salaId string) error {
+func (s *mockService) CreateFunction(ctx context.Context, horaInicio time.Time, peliculaId, salaId, tipoFuncionId string) error {
 	return nil
 }
 func (s *mockService) GetFuncionesByPeliculaAndFechaInicio(ctx context.Context, peliculaId string, fecha time.Time) ([]domain.Funcion, error) {
@@ -98,4 +98,8 @@ func (s *mockService) DeseleccionarAsiento(ctx context.Context, asientoId, trans
 
 func (s *mockService) DeshacerTransaccion(ctx context.Context, transaccionId string) error {
 	return nil
+}
+
+func (s *mockService) GetPreciosBoletos(ctx context.Context) ([]domain.PrecioBoleto, error) {
+	return nil, nil
 }
