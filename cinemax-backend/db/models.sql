@@ -1,5 +1,5 @@
 CREATE TABLE "TIPO_FUNCION"(
-    "TIPO_FUNCION_ID"  int4            GENERATED ALWAYS AS IDENTITY,
+    "TIPO_FUNCION_ID"  int4         GENERATED ALWAYS AS IDENTITY,
     "CLAVE"         varchar(6)      NOT NULL,
     "DESCRIPCION"   varchar(255)    NOT NULL,
     "CREATED_AT"   timestamp        NOT NULL DEFAULT NOW(),
@@ -13,8 +13,8 @@ CREATE TABLE "TIPO_FUNCION"(
 --
 CREATE TABLE "SALA"(
     "SALA_ID"       int4            GENERATED ALWAYS AS IDENTITY,
-    "CLAVE"        varchar(40)     NOT NULL,
-    "NOMBRE"   varchar(255)    NOT NULL,
+    "CLAVE"         varchar(40)     NOT NULL,
+    "NOMBRE"        varchar(255)    NOT NULL,
     "UBICACION"     varchar(255)    NOT NULL,
     "CREATED_AT"   timestamp        NOT NULL DEFAULT NOW(),
     "UPDATED_AT"   timestamp        NOT NULL DEFAULT NOW(),
@@ -86,7 +86,7 @@ CREATE TABLE "PELICULA"(
     "DURACION_MINUTOS"      int4             NOT NULL,
     "ANIO"                  varchar(4)       NOT NULL,
     "FECHA_DISPONIBILIDAD"  timestamp        NOT NULL,
-    "IMAGEN"                varchar                  ,
+    "IMAGEN"                varchar(255)             ,
     "RESENA"                varchar(1000)    NOT NULL,
     "CLASIFICACION_ID"      int4             NOT NULL,
     "IDIOMA_ID"             int4             NOT NULL,
@@ -151,22 +151,6 @@ CREATE TABLE "EMPLEADO"(
 ;
 
 -- 
--- TABLE: "CLIENTE" 
---
-CREATE TABLE "CLIENTE"(
-    "CLIENTE_ID"  int4            GENERATED ALWAYS AS IDENTITY,
-    "NOMBRE"      varchar(40)     NOT NULL,
-    "AP_PATERNO"  varchar(40)     NOT NULL,
-    "AP_MATERNO"  varchar(40),
-    "EMAIL"       varchar(255)    NOT NULL,
-    "TELEFONO"    varchar(10)     NOT NULL,
-    "CREATED_AT"   timestamp        NOT NULL DEFAULT NOW(),
-    "UPDATED_AT"   timestamp        NOT NULL DEFAULT NOW(),
-    CONSTRAINT "CLIENTE_PK" PRIMARY KEY ("CLIENTE_ID")
-)
-;
-
--- 
 -- TABLE: "TICKET" 
 --
 CREATE TABLE "TICKET"(
@@ -174,7 +158,6 @@ CREATE TABLE "TICKET"(
     "FECHA_COMPRA"  timestamp         NOT NULL,
     "MONTO"         numeric(10, 2)    NOT NULL,
     "FUNCION_ID"    int4              NOT NULL,
-    "CLIENTE_ID"    int4,
     "EMPLEADO_ID"   int4              NOT NULL,
     "CREATED_AT"   timestamp        NOT NULL DEFAULT NOW(),
     "UPDATED_AT"   timestamp        NOT NULL DEFAULT NOW(),
@@ -284,22 +267,5 @@ CREATE TABLE "PRECIO_BOLETO"(
     REFERENCES "TIPO_BOLETO"("TIPO_BOLETO_ID"),
     CONSTRAINT "TIPO_FUNCION_FK" FOREIGN KEY ("TIPO_FUNCION_ID")
     REFERENCES "TIPO_FUNCION"("TIPO_FUNCION_ID")
-)
-;
-
--- 
--- TABLE: "TARJETA_PUNTOS" 
---
-
-CREATE TABLE "TARJETA_PUNTOS"(
-    "TARJETA_ID"     int4           GENERATED ALWAYS AS IDENTITY,
-    "CODIGO_BARRAS"  varchar(15)    NOT NULL,
-    "PUNTOS"         int4           NOT NULL,
-    "CLIENTE_ID"     int4           NOT NULL,
-    "CREATED_AT"   timestamp        NOT NULL DEFAULT NOW(),
-    "UPDATED_AT"   timestamp        NOT NULL DEFAULT NOW(),
-    CONSTRAINT "TARJETA_PUNTOS_PK" PRIMARY KEY ("TARJETA_ID"), 
-    CONSTRAINT "CLIENTE_FK" FOREIGN KEY ("CLIENTE_ID")
-    REFERENCES "CLIENTE"("CLIENTE_ID")
 )
 ;

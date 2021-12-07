@@ -1,8 +1,8 @@
 <template>
   <v-container>
-    <v-row class="text-center justify-center login">
-      <v-col cols="6" sm="3" class="mt-3">
-        <v-img src="@/assets/Imagen3.svg"  style="margin-bottom: -3vh;"/>
+    <v-row class="text-center justify-center">
+      <v-col cols="6" sm="3" lg="2" class="mt-3">
+        <v-img src="@/assets/logo.svg"  style="margin-bottom: -3vh;"/>
       </v-col>
       <v-col cols="12">
         <h1 class="display-4 font-weight-bold mb-3 noselect">Cinemax</h1>
@@ -147,9 +147,5 @@ export default {
 </script>
 
 <style>
-#login {
-  background: url('../assets/Imagen1.jpg');
-  background-size: cover;
-  height: 100%;
-}
+
 </style>

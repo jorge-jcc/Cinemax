@@ -1,7 +1,7 @@
 <template>
   <v-app-bar dark app color="red darken-4" flat>
     <v-avatar size="40">
-      <v-img src="../assets/Imagen3.svg"></v-img>
+      <v-img src="../assets/logo.svg"></v-img>
     </v-avatar>
     <h2 class="noselect" style="position:absolute; left: 62px">Cinemax</h2>
     <v-tabs centered class="ml-n9">
