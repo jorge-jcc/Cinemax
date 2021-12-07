@@ -26,3 +26,12 @@ services:
     volumes:
       - ./cinemax-backend/db/models.sql:/docker-entrypoint-initdb.d/init.sql
       - ./cinemax-backend/db/carga_inicial.sql:/docker-entrypoint-initdb.d/load.sql
+  client:
+    build: ./cinemax-client
+    ports:
+      - 80:80
+    stdin_open: true
+    tty: true
+    volumes:
+      - "/app/node_modules" 
+      - ".:/app"
