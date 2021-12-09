@@ -11,19 +11,14 @@ import (
 
 func (r *repository) GetSalasDisponibles(ctx context.Context, fechaInicio, fechaFin time.Time) ([]domain.Sala, error) {
 	query := `
-		SELECT "S"."SALA_ID", "S"."CLAVE", "S"."NOMBRE"
-		FROM "SALA" AS "S"
+		SELECT "S"."SALA_ID", "S"."CLAVE", "S"."NOMBRE" FROM "SALA" AS "S"
 		EXCEPT
 		SELECT "S"."SALA_ID", "S"."CLAVE", "S"."NOMBRE"
-		FROM "SALA" AS "S"
-			JOIN "FUNCION" AS "F" ON "S"."SALA_ID"  = "F"."SALA_ID"
-		WHERE TO_CHAR("F"."FECHA_INICIO", 'DD-MM-YYYY') = TO_CHAR($1::date, 'DD-MM-YYYY')
-			AND (
-				($1 >= "FECHA_INICIO" AND $2 <= "FECHA_FIN")
-				OR
-				($2 >= "FECHA_INICIO" AND $2 <= "FECHA_FIN")
-			)
-		ORDER BY "CLAVE"
+    FROM "SALA" AS "S"
+    JOIN "FUNCION" AS "F" ON "S"."SALA_ID"  = "F"."SALA_ID"
+    WHERE ($1::timestamp >= "FECHA_INICIO" AND $1::timestamp <= "FECHA_FIN")
+    	OR ($2::timestamp >= "FECHA_INICIO" AND $2::timestamp <= "FECHA_FIN")
+    ORDER BY "CLAVE"
 	`
 	var salas []domain.Sala
 	err := r.db.SelectContext(ctx, &salas, query, fechaInicio, fechaFin)
