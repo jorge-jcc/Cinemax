@@ -51,6 +51,7 @@ func (r *repository) GetFuncionesByPeliculaAndFechaInicio(
 			JOIN "SALA" "S" ON "F"."SALA_ID" = "S"."SALA_ID"
 		where "PELICULA_ID" = $1
 			and to_char("FECHA_INICIO", 'YYYY-MM-DD') = to_char(NOW(), 'YYYY-MM-DD')
+		ORDER BY "FECHA_INICIO"
 	`
 	var funciones []domain.Funcion
 	err := r.db.SelectContext(ctx, &funciones, query, peliculaId)

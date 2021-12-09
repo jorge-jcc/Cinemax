@@ -20,9 +20,9 @@ func (r *repository) GetSalasDisponibles(ctx context.Context, fechaInicio, fecha
 			JOIN "FUNCION" AS "F" ON "S"."SALA_ID"  = "F"."SALA_ID"
 		WHERE TO_CHAR("F"."FECHA_INICIO", 'DD-MM-YYYY') = TO_CHAR($1::date, 'DD-MM-YYYY')
 			AND (
-				($1 > "FECHA_INICIO" AND $2 < "FECHA_FIN")
+				($1 >= "FECHA_INICIO" AND $2 <= "FECHA_FIN")
 				OR
-				($2 > "FECHA_INICIO" AND $2 < "FECHA_FIN")
+				($2 >= "FECHA_INICIO" AND $2 <= "FECHA_FIN")
 			)
 		ORDER BY "CLAVE"
 	`
