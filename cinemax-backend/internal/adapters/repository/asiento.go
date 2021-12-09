@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/domain"
@@ -197,7 +196,6 @@ func (r *repository) ValidarTransaccion(ctx context.Context, transaccionId strin
 	`
 	var result float32
 	err := r.db.GetContext(ctx, &result, query, transaccionId)
-	fmt.Println(err)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return domain.NewNotFound("transaccionId", transaccionId)

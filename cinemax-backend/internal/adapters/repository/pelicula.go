@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 
 	"github.com/jorge-jcc/cinemax/cinemax-backend/internal/domain"
@@ -98,7 +97,6 @@ func (r *repository) GetPeliculasByNombre(ctx context.Context, nombre string, li
 	`
 	var peliculas []domain.Pelicula
 	err := r.db.SelectContext(ctx, &peliculas, query, "%"+nombre+"%", limit, offset)
-	fmt.Println(err)
 	if err != nil {
 		return nil, domain.NewInternal()
 	}

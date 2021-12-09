@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 	"time"
 
@@ -31,7 +30,6 @@ func (r *repository) GetSalasDisponibles(ctx context.Context, fechaInicio, fecha
 	if err != nil {
 		return nil, domain.NewInternal()
 	}
-	fmt.Println(salas)
 	return salas, nil
 }
 
