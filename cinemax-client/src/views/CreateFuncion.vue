@@ -121,7 +121,6 @@
               <v-col cols="4" v-if="peliculaObject">
                 <pelicula :pelicula="peliculaObject" />
               </v-col>
-              {{horaInicio}}
             </v-row>
           </v-form>
         </v-sheet>
@@ -169,7 +168,7 @@ export default {
     },
     horaInicio: function(){
       moment.locale("es")
-      return moment(`${this.Fecha} ${this.hora}`).format()
+      return moment(`${this.Fecha} ${this.hora}`).format('YYYY-MM-DD[T]HH:mm:ss[Z]')
     }
   },
   methods:{

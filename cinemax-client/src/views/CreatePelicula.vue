@@ -111,6 +111,7 @@
                         />
                     </v-menu>
                   </v-col>
+                  {{pelicula.generoId}}
                   <v-col>
                     <v-select  v-model="pelicula.generoId"
                       :rules="[v => !!v || 'Item requerido']"
@@ -196,7 +197,7 @@ export default {
       moment.locale("es")
       CreatePeliculaAPI({
         ...this.pelicula,
-        fechaDisponibilidad: moment(this.pelicula.fechaDisponibilidad).format()
+        fechaDisponibilidad: moment(this.pelicula.fechaDisponibilidad).toISOString()
       }).then(res => {
         if(res.status == 200){
           LoadImagePeliculaAPI(this.pelicula.image, res.data.peliculaId).then(()=>{

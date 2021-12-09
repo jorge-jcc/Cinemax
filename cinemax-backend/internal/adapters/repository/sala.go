@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 
@@ -18,7 +19,11 @@ func (r *repository) GetSalasDisponibles(ctx context.Context, fechaInicio, fecha
 		FROM "SALA" AS "S"
 			JOIN "FUNCION" AS "F" ON "S"."SALA_ID"  = "F"."SALA_ID"
 		WHERE TO_CHAR("F"."FECHA_INICIO", 'DD-MM-YYYY') = TO_CHAR($1::date, 'DD-MM-YYYY')
-			AND ("FECHA_INICIO" < $2 AND "FECHA_FIN" > $1)
+			AND (
+				($1 > "FECHA_INICIO" AND $2 < "FECHA_FIN")
+				OR
+				($2 > "FECHA_INICIO" AND $2 < "FECHA_FIN")
+			)
 		ORDER BY "CLAVE"
 	`
 	var salas []domain.Sala
@@ -26,6 +31,7 @@ func (r *repository) GetSalasDisponibles(ctx context.Context, fechaInicio, fecha
 	if err != nil {
 		return nil, domain.NewInternal()
 	}
+	fmt.Println(salas)
 	return salas, nil
 }
 

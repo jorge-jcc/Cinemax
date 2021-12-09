@@ -21,7 +21,8 @@ func (r *repository) CreatePelicula(ctx context.Context, p *domain.Pelicula) err
 	var result string
 	err := r.db.GetContext(ctx, &result, query,
 		p.Nombre, p.Director, p.Descripcion, p.DuracionMinutos,
-		p.Anio, p.FechaDisponiblidad, p.Resena, 1, 1, 1, 1,
+		p.Anio, p.FechaDisponiblidad, p.Resena, p.Clasificacion.ID,
+		p.Idioma.ID, p.Subtitulo.ID, p.Genero.ID,
 	)
 	if err != nil {
 		if _, ok := err.(*pq.Error); ok {

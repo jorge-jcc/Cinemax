@@ -1,5 +1,5 @@
 # etapa de compilación
-#FROM node:9.11.1-alpine as build-stage
+#FROM node:alpine as build-stage
 #WORKDIR /app
 #COPY package*.json ./
 #RUN yarn install
@@ -7,7 +7,9 @@
 #RUN yarn build
 
 # etapa de producción
-FROM nginx:1.13.12-alpine as production-stage
+
+FROM nginx:alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY ./dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

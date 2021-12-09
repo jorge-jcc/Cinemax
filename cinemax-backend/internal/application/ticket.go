@@ -45,7 +45,7 @@ func (s *service) CreateTicket(ctx context.Context, ticket *domain.Ticket) error
 			}
 		}
 		// Update Transaccion
-		err = s.r.UpdateTimeTransaction(c, ticket.TransaccionId)
+		err = r.UpdateTimeTransaction(c, ticket.TransaccionId)
 		if err != nil {
 			return err
 		}
