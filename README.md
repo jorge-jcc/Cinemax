@@ -1,5 +1,5 @@
 <p>
-  <img src="img/logo.png" align="right"  width="40" height="40" />
+  <img src="img/logo.png" align="right"  width="60" height="60" />
 </p>
 
 # Cinemax
