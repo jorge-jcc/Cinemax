@@ -261,7 +261,7 @@ El sistema se encuentra empaquetado dentro contenedores Docker que se pueden ges
 
 ### Ejemplo de uso del sistema
 
-Debido a que se montó el sistema sobre una instancia EC2 de AWS, es posible seguir cada uno de los pasos introduciendo la siguiente dirección: http://ec2-3-23-126-15.us-east-2.compute.amazonaws.com/ 
+Debido a que se montó el sistema sobre una instancia EC2 de AWS, es posible seguir cada uno de los pasos introduciendo la siguiente dirección: http://ec2-18-219-182-3.us-east-2.compute.amazonaws.com/
 
 La primera pantalla que se muestra corresponde con el login de la aplicación. 
 
